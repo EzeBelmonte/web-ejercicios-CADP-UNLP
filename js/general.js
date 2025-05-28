@@ -5,6 +5,7 @@ const subContenedores = document.querySelectorAll("[id^='sub-']");
 const partes = document.querySelectorAll('.boton-parte');
 
 botones.forEach((boton) => {
+    
     boton.addEventListener('click', () => {
         // guardamos la práctica seleccionada
         practicaSeleccionada = boton.dataset.id;
@@ -25,8 +26,6 @@ partes.forEach((botonParte) => {
         const parteSeleccionada = botonParte.dataset.parte;
 
         if (practicaSeleccionada !== null) {
-            console.log("Práctica: ", practicaSeleccionada);
-            console.log("Parte: ", parteSeleccionada);
             ejercicio(practicaSeleccionada, parteSeleccionada);
         } else {
             console.log("Primero seleccioná una práctica.");
@@ -36,16 +35,18 @@ partes.forEach((botonParte) => {
 
 
 function ejercicio(id, parte) {
-    let carpeta = `practica${id}`; 
 
-    if (parte !== '0') {
-        carpeta += `/parte${parte}`;
-    }
+    let practica = `practica${id}`;
+
+    if (parte === '3') practica += '/adicionales';
+    else if (parte !== '0') practica += `/parte${parte}`;
+
 
     const opciones = document.getElementById("contenedor-opciones");
     opciones.innerHTML = ""; // limpiar radios anteriores
     
-    const url = `https://api.github.com/repos/EzeFacultad/practicas-CADP/contents/${carpeta}`;
+    const url = `https://api.github.com/repos/EzeFacultad/practicas-CADP/contents/${practica}`;
+
     fetch(url)
         .then(res => res.json())
         .then(data => {
@@ -80,11 +81,16 @@ function ejercicio(id, parte) {
                     boton.onclick = function () {
                         const ejer = document.querySelector(`input[name="opcion"]:checked`);
                         if (ejer) {
-                            fetch(`${url}/e0${ejer.value}.pas`)
+                            
+                            let ejercicio = '';
+                            let numEjercicio = Number(ejer.value);
+                            if (numEjercicio < 10) ejercicio = `e0${ejer.value}.pas`;
+                            else ejercicio = `e${ejer.value}.pas`;
+                            
+                            fetch(`${url}/${ejercicio}`)
                                 .then(res => res.json())
                                 .then(data => {
                                     
-
                                     // traemos el código codificado
                                     const base64Content = data.content;
                                     // decodificamos
@@ -95,7 +101,6 @@ function ejercicio(id, parte) {
                                     const mostrar = document.querySelector(".container")
                                     mostrar.style.display = "flex";
                                     
-
                                     // resaltar el código con Prism
                                     Prism.highlightElement(codigo);
                                     
