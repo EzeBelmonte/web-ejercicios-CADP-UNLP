@@ -27,14 +27,12 @@ partes.forEach((botonParte) => {
 
         if (practicaSeleccionada !== null) {
             ejercicio(practicaSeleccionada, parteSeleccionada);
-        } else {
-            console.log("Primero seleccioná una práctica.");
         }
     });
 });
 
 
-function ejercicio(id, parte) {
+async function ejercicio(id, parte) {
 
     let practica = `practica${id}`;
 
@@ -47,9 +45,11 @@ function ejercicio(id, parte) {
     
     const url = `https://api.github.com/repos/EzeFacultad/practicas-CADP/contents/${practica}`;
 
-    fetch(url)
-        .then(res => res.json())
-        .then(data => {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Práctica incompleta");
+        const data = await response.json();
+
             if (Array.isArray(data)) {
                 for (let i=0; i < data.length; i++) {
                     // crear el label
@@ -87,7 +87,8 @@ function ejercicio(id, parte) {
                             if (numEjercicio < 10) ejercicio = `e0${ejer.value}.pas`;
                             else ejercicio = `e${ejer.value}.pas`;
                             
-                            fetch(`${url}/${ejercicio}`)
+                            const url2 = `${url}/${ejercicio}`;
+                            fetch(url2)
                                 .then(res => res.json())
                                 .then(data => {
                                     
@@ -107,22 +108,13 @@ function ejercicio(id, parte) {
                                     console.log(decodedContent);
                                 });
                             
-                        } else {
-                            console.log("hola");
                         }
-                        
                     }
                     // Agregar botón al div padre de `opciones` (el que tiene clase "opciones")
                     opciones.parentElement.appendChild(boton);
                 }
-                
-
-            } else {
-                console.error("Error en la respuesta:", data);
             }
-        });
-}
-
-function buscar() {
-    console.log("Hola");
+    } catch(err) {
+        alert('Práctica incompleta');
+    }
 }
