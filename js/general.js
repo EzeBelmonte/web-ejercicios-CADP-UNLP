@@ -5,7 +5,6 @@ const subContenedores = document.querySelectorAll("[id^='sub-']");
 const partes = document.querySelectorAll('.boton-parte');
 
 botones.forEach((boton) => {
-    
     boton.addEventListener('click', () => {
         // guardamos la práctica seleccionada
         practicaSeleccionada = boton.dataset.id;
@@ -16,11 +15,10 @@ botones.forEach((boton) => {
         // mostrar los sub-botones correspondientes
         const sub = document.getElementById('sub-' + practicaSeleccionada);
         if (sub) sub.style.display = "block";
-
     });
 });
 
-// al hacer clic en algun boton "boton-parte"
+// al hacer clic en algún botón "boton-parte"
 partes.forEach((botonParte) => {
     botonParte.addEventListener('click', () => {
         const parteSeleccionada = botonParte.dataset.parte;
@@ -31,90 +29,90 @@ partes.forEach((botonParte) => {
     });
 });
 
-
 async function ejercicio(id, parte) {
-
     let practica = `practica${id}`;
 
     if (parte === '3') practica += '/adicionales';
     else if (parte !== '0') practica += `/parte${parte}`;
 
+    console.log("Ruta a buscar:", practica);
 
     const opciones = document.getElementById("contenedor-opciones");
     opciones.innerHTML = ""; // limpiar radios anteriores
-    
+
     const url = `https://api.github.com/repos/EzeFacultad/practicas-CADP/contents/${practica}`;
 
     try {
         const response = await fetch(url);
         if (!response.ok) throw new Error("Práctica incompleta");
+
         const data = await response.json();
 
-            if (Array.isArray(data)) {
-                for (let i=0; i < data.length; i++) {
-                    // crear el label
-                    const label = document.createElement("label");
-                    // agregar clases al label
-                    label.classList.add("d-flex", "flex-column", "align-items-center");
+        // filtrar archivos que terminan en .pas
+        const pasFiles = data.filter(file => file.name.endsWith('.pas'));
 
-                    // configurar el inpunt
-                    const radio = document.createElement("input");
-                    radio.type = "radio";
-                    radio.name = "opcion";
-                    radio.value = i + 1;
+        if (pasFiles.length === 0) {
+            opciones.innerHTML = "<p>No se encontraron archivos .pas</p>";
+            return;
+        }
 
-                    // se agrega el input dentro del label
-                    label.append(radio);
-                    // le agregamos un "texto" al label
-                    label.append(`${radio.value}`);
-                    // insertamos el label en el div
-                    opciones.appendChild(label);
-                };
-                
-                // para verificar si existe ya un boton
-                const botonBuscar = document.querySelector(".boton-buscar");
-                // si no existe, se crea
-                if (!botonBuscar) {
-                    const boton = document.createElement("button");
-                    boton.className = "boton-buscar";
-                    boton.textContent = "Buscar";
-                    boton.onclick = function () {
-                        const ejer = document.querySelector(`input[name="opcion"]:checked`);
-                        if (ejer) {
-                            
-                            let ejercicio = '';
-                            let numEjercicio = Number(ejer.value);
-                            if (numEjercicio < 10) ejercicio = `e0${ejer.value}.pas`;
-                            else ejercicio = `e${ejer.value}.pas`;
-                            
-                            const url2 = `${url}/${ejercicio}`;
-                            fetch(url2)
-                                .then(res => res.json())
-                                .then(data => {
-                                    
-                                    // traemos el código codificado
-                                    const base64Content = data.content;
-                                    // decodificamos
-                                    const decodedContent = atob(base64Content); // atob = ASCII to binary (decodifica base64)
-                                    
-                                    const codigo = document.getElementById("codigo");
-                                    codigo.textContent = decodedContent;
-                                    const mostrar = document.querySelector(".container")
-                                    mostrar.style.display = "flex";
-                                    
-                                    // resaltar el código con Prism
-                                    Prism.highlightElement(codigo);
-                                    
-                                    console.log(decodedContent);
-                                });
-                            
-                        }
-                    }
-                    // Agregar botón al div padre de `opciones` (el que tiene clase "opciones")
-                    opciones.parentElement.appendChild(boton);
+        pasFiles.forEach((file) => {
+            const label = document.createElement("label");
+            label.classList.add("d-flex", "flex-column", "align-items-center");
+
+            const radio = document.createElement("input");
+            radio.type = "radio";
+            radio.name = "opcion";
+            radio.value = file.name;
+
+            label.append(radio);
+            label.append(file.name.replace('.pas', ''));
+            opciones.appendChild(label);
+        });
+
+        let botonBuscar = document.querySelector(".boton-buscar");
+
+        if (!botonBuscar) {
+            botonBuscar = document.createElement("button");
+            botonBuscar.className = "boton-buscar";
+            botonBuscar.textContent = "Buscar";
+            opciones.parentElement.appendChild(botonBuscar);
+        }
+
+        // siempre actualizamos el evento onclick por si cambió el contexto
+        botonBuscar.onclick = async function () {
+            const ejer = document.querySelector(`input[name="opcion"]:checked`);
+            if (ejer) {
+                const ejercicio = ejer.value;
+                const url2 = `${url}/${ejercicio}`;
+                console.log("Archivo seleccionado:", url2);
+
+                try {
+                    const res = await fetch(url2);
+                    const data = await res.json();
+
+                    const base64Content = data.content;
+                    const decodedContent = atob(base64Content);
+
+                    const codigo = document.getElementById("codigo");
+                    codigo.textContent = decodedContent;
+
+                    const mostrar = document.querySelector(".container");
+                    mostrar.style.display = "flex";
+
+                    Prism.highlightElement(codigo);
+
+                    console.log("Contenido del ejercicio:", decodedContent);
+                } catch (err) {
+                    console.error("Error al obtener el archivo:", err);
+                    alert("No se pudo obtener el archivo.");
                 }
+            } else {
+                alert("Seleccioná un ejercicio primero.");
             }
-    } catch(err) {
-        alert('Práctica incompleta');
+        };
+    } catch (err) {
+        console.error("Error al obtener el listado de archivos:", err);
+        alert("Práctica incompleta.");
     }
 }
