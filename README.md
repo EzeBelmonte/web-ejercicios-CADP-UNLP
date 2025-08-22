@@ -6,3 +6,18 @@ Una vez seleccionada la práctica y su respectiva parte, se mostrará un conjunt
 Finalmente, al hacer clic en el botón "Buscar", se visualizará el código asociado al ejercicio seleccionado.
 
 ***Importante: Esto ha sido realizado de forma particular; no fue elaborado por la cátedra***
+
+## Tecnologías utilizadas
+  - HTML5
+  - CSS3
+  - JavaScript (con Fetch API para peticiones HTTP)
+
+## Authors
+
+- ## Autor
+
+**Ezequiel**
+
+- GitHub: [@eze-belmonte](https://github.com/eze-belmonte)
+- Instagram: [@eze.belmonte](https://instagram.com/eze.belmonte)
+- LinkedIn: [Belmonte Ezequiel](https://linkedin.com/in/ezequiel-belmonte)
