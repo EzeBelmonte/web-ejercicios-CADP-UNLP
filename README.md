@@ -7,17 +7,19 @@ Finalmente, al hacer clic en el botón "Buscar", se visualizará el código asoc
 
 ***Importante: Esto ha sido realizado de forma particular; no fue elaborado por la cátedra***
 
+-------
+
 ## Tecnologías utilizadas
   - HTML5
   - CSS3
   - JavaScript (con Fetch API para peticiones HTTP)
 
-## Authors
+-------
 
-- ## Autor
+## Autor
 
 **Ezequiel**
 
-- GitHub: [@eze-belmonte](https://github.com/eze-belmonte)
+- GitHub: [@ezeBelmonte](https://github.com/ezeBelmonte)
 - Instagram: [@eze.belmonte](https://instagram.com/eze.belmonte)
-- LinkedIn: [Belmonte Ezequiel](https://linkedin.com/in/ezequiel-belmonte)
+- LinkedIn: [ezequiel-belmonte](https://linkedin.com/in/ezequiel-belmonte)
